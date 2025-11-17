@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Physical & Natural Sciences | Find Your Career</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+    <div class="nav-container">
+        <div class="nav-title">Department of Physical & Natural Sciences</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="introduction.html">Introduction</a>
+            <a href="content.html">Programmes</a>
+            <a href="research.html">Research</a>
+            <a href="careers-game.html">Careers</a>
+        </nav>
+    </div>
+</header>
+<main>
+    <section class="hero">
+        <h1>Pathways</h1>
+        <p>
+            Answer a few questions to find careers in your field
+        </p>
+    </section>
+
+    <section class="section">
+        <div class="game-container">
+            <h2>Econator</h2>
+            <p class="game-sub">
+                Select the options based on your interests.
+            </p>
+
+            <div class="btn-row" style="margin-bottom:1rem;">
+                <button class="btn btn-primary" id="start-btn">Start game</button>
+                <button class="btn btn-outline" id="reset-btn">Restart</button>
+            </div>
+
+            <div id="question-box" class="hidden">
+                <p class="game-question" id="question-text"></p>
+                <div class="game-buttons">
+                    <button class="btn btn-primary" id="yes-btn">Yes</button>
+                    <button class="btn btn-outline" id="no-btn">No</button>
+                </div>
+                <p id="status-text" style="font-size:0.85rem; color:#6b7280;"></p>
+            </div>
+
+            <div id="result-box" class="hidden game-result">
+                <h3 id="result-title"></h3>
+                <p id="result-desc"></p>
+            </div>
+        </div>
+    </section>
+</main>
+<footer>
+    Department of Physical & Natural Sciences
+</footer>
+
+<script>
+const careers = {
+    conservation: {
+        name: "Conservation Biologist / Wildlife Conservationist",
+        desc: "Conservation biologists study species behaviour, population trends, and ecosystem dynamics to inform conservation strategies. They conduct field research, assess threats such as habitat fragmentation, and develop plans to restore ecological balance and protect biodiversity."
+    },
+    gis: {
+        name: "GIS & Spatial Data Specialist",
+        desc: "GIS specialists use spatial mapping, drone imagery, and remote sensing tools to monitor changes in land cover and habitat. Their analysis supports data-driven conservation planning, helping governments and organizations prioritise regions for protection or restoration."
+    },
+    journalist: {
+        name: "Environmental Journalist",
+        desc: "Environmental journalists investigate and report on ecological issues, translating scientific findings and local experiences into accessible narratives. Their documentation raises awareness about conservation challenges and influences public understanding and policy dialogue."
+    },
+    climate_dev: {
+        name: "Climate Change & Development Researcher",
+        desc: "These researchers examine the intersection of climate science and socio-economic development. They model future climate scenarios, assess community vulnerabilities, and propose adaptive strategies to build resilience in coastal and rural areas."
+    },
+    policy: {
+        name: "Environmental Policy Analyst",
+        desc: "Policy analysts evaluate environmental data and legal frameworks to design adaptation and mitigation policies. Their work includes drafting policy briefs, advising governments and NGOs, and aligning national actions with international climate agreements."
+    },
+    educator: {
+        name: "Environmental Educator",
+        desc: "Environmental educators design programs and campaigns that communicate climate science and sustainability concepts to diverse audiences. They aim to foster behavioural change, community participation, and informed environmental citizenship."
+    },
+    urban: {
+        name: "Urban Environmental Planner",
+        desc: "Urban environmental planners integrate ecological principles into city design. They use spatial data and environmental assessments to develop climate-resilient infrastructure, promote sustainable transport systems, and enhance urban green spaces."
+    },
+    renewable: {
+        name: "Renewable Energy Specialist",
+        desc: "Renewable energy specialists focus on the design, assessment, and implementation of clean energy technologies such as solar, wind, and bioenergy. Their work contributes to reducing carbon emissions and ensuring sustainable energy access in growing cities."
+    },
+    sustainability: {
+        name: "Sustainability Consultant",
+        desc: "Sustainability consultants assist corporations and institutions in adopting environmentally responsible practices. They assess energy use, carbon footprints, and waste management systems, providing strategies aligned with ESG (Environmental, Social, Governance) goals."
+    }
+};
+
+const questions = {
+    outdoors: "Do you prefer working mainly outdoors?",
+    mapping: "Do you enjoy working with maps, satellite images or spatial data?",
+    writing: "Do you like writing stories, reports or investigative pieces?",
+    teaching: "Do you like teaching, workshops or awareness campaigns?",
+    climate_models: "Are you interested in climate data and numerical analysis?",
+    policy_law: "Are you interested in environmental law, regulations and policy frameworks?",
+    city_design: "Do you want to improve city layouts, green spaces or urban mobility?",
+    energy: "Are you excited by solar panels, wind farms or other clean-energy systems?",
+    corporate: "Do you want to help companies become more sustainable?"
+};
+
+const mapping = {
+    conservation: ["outdoors"],
+    gis: ["mapping"],
+    journalist: ["writing"],
+    educator: ["teaching"],
+    climate_dev: ["climate_models"],
+    policy: ["policy_law"],
+    urban: ["city_design"],
+    renewable: ["energy"],
+    sustainability: ["corporate"]
+};
+
+let remaining = Object.keys(careers);
+let asked = [];
+let finished = false;
+
+const startBtn = document.getElementById("start-btn");
+const resetBtn = document.getElementById("reset-btn");
+const questionBox = document.getElementById("question-box");
+const questionText = document.getElementById("question-text");
+const yesBtn = document.getElementById("yes-btn");
+const noBtn = document.getElementById("no-btn");
+const statusText = document.getElementById("status-text");
+const resultBox = document.getElementById("result-box");
+const resultTitle = document.getElementById("result-title");
+const resultDesc = document.getElementById("result-desc");
+
+let currentQuestionKey = null;
+
+function resetGame() {
+    remaining = Object.keys(careers);
+    asked = [];
+    finished = false;
+    currentQuestionKey = null;
+    questionBox.classList.add("hidden");
+    resultBox.classList.add("hidden");
+    statusText.textContent = "";
+    questionText.textContent = "";
+}
+
+function pickNextQuestion() {
+    const allKeys = Object.keys(questions);
+    const unused = allKeys.filter(k => !asked.includes(k));
+    if (unused.length === 0) {
+        return null;
+    }
+    const idx = Math.floor(Math.random() * unused.length);
+    return unused[idx];
+}
+
+function showQuestion() {
+    if (finished) return;
+    currentQuestionKey = pickNextQuestion();
+    if (!currentQuestionKey) {
+        finishGame();
+        return;
+    }
+    questionText.textContent = questions[currentQuestionKey];
+    questionBox.classList.remove("hidden");
+    statusText.textContent = "Remaining possibilities: " + remaining.length;
+}
+
+function applyAnswer(answer) {
+    if (!currentQuestionKey || finished) return;
+    asked.push(currentQuestionKey);
+
+    if (answer === "yes") {
+        remaining = remaining.filter(c => mapping[c].includes(currentQuestionKey));
+    } else {
+        remaining = remaining.filter(c => !mapping[c].includes(currentQuestionKey));
+    }
+
+    if (remaining.length <= 1 || asked.length === Object.keys(questions).length) {
+        finishGame();
+    } else {
+        showQuestion();
+    }
+}
+
+function finishGame() {
+    finished = true;
+    questionBox.classList.add("hidden");
+    resultBox.classList.remove("hidden");
+
+    if (remaining.length === 1) {
+        const key = remaining[0];
+        resultTitle.textContent = "I think you are thinking of: " + careers[key].name;
+        resultDesc.textContent = careers[key].desc;
+    } else if (remaining.length > 1) {
+        const key = remaining[0];
+        resultTitle.textContent = "I am not fully sure, but my best guess is: " + careers[key].name;
+        resultDesc.textContent = careers[key].desc;
+    } else {
+        resultTitle.textContent = "I couldn't guess your career.";
+        resultDesc.textContent = "Your answers eliminated all options.";
+    }
+}
+
+startBtn.addEventListener("click", function () {
+    resetGame();
+    showQuestion();
+});
+
+resetBtn.addEventListener("click", function () {
+    resetGame();
+});
+
+yesBtn.addEventListener("click", function () {
+    applyAnswer("yes");
+});
+
+noBtn.addEventListener("click", function () {
+    applyAnswer("no");
+});
+</script>
+</body>
+</html>
