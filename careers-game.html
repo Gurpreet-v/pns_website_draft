@@ -2,8 +2,88 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Physical & Natural Sciences | Find Your Career</title>
+    <title>Physical & Natural Sciences | Environmental Careers Game</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .mission-title {
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+        .mission-scene {
+            font-size: 0.9rem;
+            color: #4b5563;
+            margin-bottom: 1rem;
+        }
+        .mission-progress {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-bottom: 0.7rem;
+        }
+        .choice-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.65rem;
+            margin-bottom: 1rem;
+        }
+        .choice-btn {
+            width: 100%;
+            text-align: left;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            padding: 0.7rem 0.8rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+        }
+        .choice-btn span {
+            display: block;
+        }
+        .choice-label {
+            font-weight: 500;
+            margin-bottom: 0.15rem;
+        }
+        .choice-desc {
+            font-size: 0.85rem;
+            color: #4b5563;
+        }
+        .choice-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+        }
+        .pill-row span {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            margin-right: 0.3rem;
+            margin-bottom: 0.3rem;
+            background: #e5f3ff;
+        }
+        .summary-step {
+            padding: 0.5rem 0.6rem;
+            border-radius: 10px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 0.5rem;
+            font-size: 0.87rem;
+        }
+        .summary-step strong {
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .rank-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            margin-right: 0.4rem;
+        }
+        .rank-1 { background:#dcfce7; color:#166534; }
+        .rank-2 { background:#e0f2fe; color:#075985; }
+        .rank-3 { background:#fef9c3; color:#854d0e; }
+    </style>
 </head>
 <body>
 <header>
@@ -14,42 +94,52 @@
             <a href="introduction.html">Introduction</a>
             <a href="content.html">Programmes</a>
             <a href="research.html">Research</a>
-            <a href="careers-game.html">Careers</a>
+            <a href="careers-game.html">Careers Game</a>
         </nav>
     </div>
 </header>
 <main>
     <section class="hero">
-        <h1>Pathways</h1>
+        <h1>Environmental Pathways Game</h1>
         <p>
-            Answer a few questions to find careers in your field
+            Imagine you are graduating with an Environmental Studies background. In each mission, choose how you would respond.
+            At the end, the game will suggest career pathways that match the pattern of your choices.
         </p>
     </section>
 
     <section class="section">
         <div class="game-container">
-            <h2>Econator</h2>
+            <h2>Choose Your Future</h2>
             <p class="game-sub">
-                Select the options based on your interests.
+                There are four missions. Each decision nudges you towards different types of work:
+                field, data, policy, cities, education, community, or technology. Just pick the option that feels most like you
+                right now.
             </p>
 
             <div class="btn-row" style="margin-bottom:1rem;">
-                <button class="btn btn-primary" id="start-btn">Start game</button>
-                <button class="btn btn-outline" id="reset-btn">Restart</button>
+                <button class="btn btn-primary" id="start-btn">Start story</button>
+                <button class="btn btn-outline" id="restart-btn">Restart</button>
             </div>
 
-            <div id="question-box" class="hidden">
-                <p class="game-question" id="question-text"></p>
-                <div class="game-buttons">
-                    <button class="btn btn-primary" id="yes-btn">Yes</button>
-                    <button class="btn btn-outline" id="no-btn">No</button>
+            <div id="mission-box" class="hidden">
+                <p class="mission-progress" id="mission-progress"></p>
+                <p class="mission-title" id="mission-title"></p>
+                <p class="mission-scene" id="mission-scene"></p>
+
+                <div class="choice-list" id="choice-list"></div>
+            </div>
+
+            <div id="results-box" class="hidden">
+                <div class="game-result">
+                    <h3>Your suggested environmental pathways</h3>
+                    <p id="result-intro" style="font-size:0.9rem; margin-bottom:0.6rem;"></p>
+                    <div id="top-careers"></div>
                 </div>
-                <p id="status-text" style="font-size:0.85rem; color:#6b7280;"></p>
-            </div>
 
-            <div id="result-box" class="hidden game-result">
-                <h3 id="result-title"></h3>
-                <p id="result-desc"></p>
+                <div style="margin-top:1.1rem;">
+                    <h4 style="margin-bottom:0.4rem;">How your story unfolded</h4>
+                    <div id="story-summary"></div>
+                </div>
             </div>
         </div>
     </section>
@@ -60,169 +150,314 @@
 
 <script>
 const careers = {
-    conservation: {
-        name: "Conservation Biologist / Wildlife Conservationist",
-        desc: "Conservation biologists study species behaviour, population trends, and ecosystem dynamics to inform conservation strategies. They conduct field research, assess threats such as habitat fragmentation, and develop plans to restore ecological balance and protect biodiversity."
+    field_ecologist: {
+        name: "Field Ecologist",
+        desc: "Spends extended time outdoors studying plants, animals and ecosystems, designing surveys and monitoring environmental change on the ground."
     },
-    gis: {
-        name: "GIS & Spatial Data Specialist",
-        desc: "GIS specialists use spatial mapping, drone imagery, and remote sensing tools to monitor changes in land cover and habitat. Their analysis supports data-driven conservation planning, helping governments and organizations prioritise regions for protection or restoration."
+    env_data_analyst: {
+        name: "Environmental Data Analyst",
+        desc: "Works with datasets, models and visualisations to understand trends in climate, pollution, land use or biodiversity and support evidence-based decisions."
     },
-    journalist: {
-        name: "Environmental Journalist",
-        desc: "Environmental journalists investigate and report on ecological issues, translating scientific findings and local experiences into accessible narratives. Their documentation raises awareness about conservation challenges and influences public understanding and policy dialogue."
+    climate_policy_advisor: {
+        name: "Climate Policy Advisor",
+        desc: "Connects science with decision-making, drafting briefs, negotiating trade-offs and shaping climate and environmental policies for governments or organisations."
     },
-    climate_dev: {
-        name: "Climate Change & Development Researcher",
-        desc: "These researchers examine the intersection of climate science and socio-economic development. They model future climate scenarios, assess community vulnerabilities, and propose adaptive strategies to build resilience in coastal and rural areas."
+    urban_sustainability_planner: {
+        name: "Urban Sustainability Planner",
+        desc: "Designs more liveable cities through work on transport, green spaces, housing and infrastructure with a focus on heat, floods, air quality and equity."
     },
-    policy: {
-        name: "Environmental Policy Analyst",
-        desc: "Policy analysts evaluate environmental data and legal frameworks to design adaptation and mitigation policies. Their work includes drafting policy briefs, advising governments and NGOs, and aligning national actions with international climate agreements."
+    community_educator: {
+        name: "Community Environmental Educator",
+        desc: "Co-creates workshops, campaigns and learning experiences with schools and communities to build awareness and support local environmental action."
     },
-    educator: {
-        name: "Environmental Educator",
-        desc: "Environmental educators design programs and campaigns that communicate climate science and sustainability concepts to diverse audiences. They aim to foster behavioural change, community participation, and informed environmental citizenship."
+    marine_conservationist: {
+        name: "Marine Conservation Practitioner",
+        desc: "Focuses on coasts and oceans, working with fishers, coastal communities and marine ecosystems to protect habitats and manage resources."
     },
-    urban: {
-        name: "Urban Environmental Planner",
-        desc: "Urban environmental planners integrate ecological principles into city design. They use spatial data and environmental assessments to develop climate-resilient infrastructure, promote sustainable transport systems, and enhance urban green spaces."
+    renewables_engineer: {
+        name: "Renewable Energy Project Specialist",
+        desc: "Works on planning and implementing solar, wind or other clean energy projects, bridging technical design, social acceptance and environmental concerns."
     },
-    renewable: {
-        name: "Renewable Energy Specialist",
-        desc: "Renewable energy specialists focus on the design, assessment, and implementation of clean energy technologies such as solar, wind, and bioenergy. Their work contributes to reducing carbon emissions and ensuring sustainable energy access in growing cities."
-    },
-    sustainability: {
-        name: "Sustainability Consultant",
-        desc: "Sustainability consultants assist corporations and institutions in adopting environmentally responsible practices. They assess energy use, carbon footprints, and waste management systems, providing strategies aligned with ESG (Environmental, Social, Governance) goals."
+    csr_specialist: {
+        name: "Corporate Sustainability & CSR Specialist",
+        desc: "Helps companies measure their impact, set targets, design sustainability strategies and support projects related to environment and communities."
     }
 };
 
-const questions = {
-    outdoors: "Do you prefer working mainly outdoors?",
-    mapping: "Do you enjoy working with maps, satellite images or spatial data?",
-    writing: "Do you like writing stories, reports or investigative pieces?",
-    teaching: "Do you like teaching, workshops or awareness campaigns?",
-    climate_models: "Are you interested in climate data and numerical analysis?",
-    policy_law: "Are you interested in environmental law, regulations and policy frameworks?",
-    city_design: "Do you want to improve city layouts, green spaces or urban mobility?",
-    energy: "Are you excited by solar panels, wind farms or other clean-energy systems?",
-    corporate: "Do you want to help companies become more sustainable?"
-};
+const missions = [
+    {
+        id: "m1",
+        title: "Mission 1 – First field posting",
+        scene: "You join a year-long fellowship after graduation. The programme lets you choose your first placement.",
+        options: [
+            {
+                id: "m1_o1",
+                label: "Remote wildlife landscape",
+                desc: "You travel to a protected area to help track species, set up camera traps and support habitat restoration.",
+                scores: { field_ecologist: 3, marine_conservationist: 1 }
+            },
+            {
+                id: "m1_o2",
+                label: "Coastal village",
+                desc: "You live in a coastal community documenting erosion, fishing practices and local observations of change.",
+                scores: { marine_conservationist: 3, community_educator: 1 }
+            },
+            {
+                id: "m1_o3",
+                label: "City data lab",
+                desc: "You stay in a city-based research group building maps and dashboards from environmental data.",
+                scores: { env_data_analyst: 3, urban_sustainability_planner: 1 }
+            }
+        ]
+    },
+    {
+        id: "m2",
+        title: "Mission 2 – The decision meeting",
+        scene: "Your organisation is planning its next big project and asks you where to focus limited resources.",
+        options: [
+            {
+                id: "m2_o1",
+                label: "Deep-dive field study",
+                desc: "Propose an intensive field study to understand one ecosystem properly before scaling anything else.",
+                scores: { field_ecologist: 2, marine_conservationist: 1 }
+            },
+            {
+                id: "m2_o2",
+                label: "Evidence for policy",
+                desc: "Design a study that delivers clear indicators and maps for policymakers to act on.",
+                scores: { env_data_analyst: 2, climate_policy_advisor: 2 }
+            },
+            {
+                id: "m2_o3",
+                label: "Public-facing programme",
+                desc: "Recommend a project that builds a model education and outreach programme with communities.",
+                scores: { community_educator: 2, csr_specialist: 1 }
+            }
+        ]
+    },
+    {
+        id: "m3",
+        title: "Mission 3 – The city challenge",
+        scene: "You are invited to help a medium-sized city that is facing heatwaves, flooding and air pollution.",
+        options: [
+            {
+                id: "m3_o1",
+                label: "Reimagine the city plan",
+                desc: "Work with planners to redesign streets, drainage, housing and green spaces for resilience.",
+                scores: { urban_sustainability_planner: 3, climate_policy_advisor: 1 }
+            },
+            {
+                id: "m3_o2",
+                label: "Clean energy transition",
+                desc: "Focus on accelerating rooftop solar, efficient buildings and clean transport fleets.",
+                scores: { renewables_engineer: 3, env_data_analyst: 1 }
+            },
+            {
+                id: "m3_o3",
+                label: "Corporate coalition",
+                desc: "Bring local businesses together to commit to sustainability targets and community projects.",
+                scores: { csr_specialist: 3, community_educator: 1 }
+            }
+        ]
+    },
+    {
+        id: "m4",
+        title: "Mission 4 – Your long-term impact",
+        scene: "After several years of work, you pause and ask: what do I want my core contribution to be?",
+        options: [
+            {
+                id: "m4_o1",
+                label: "Understanding ecosystems deeply",
+                desc: "You want to be the person who really understands how particular landscapes or coasts function and change.",
+                scores: { field_ecologist: 2, marine_conservationist: 2 }
+            },
+            {
+                id: "m4_o2",
+                label: "Shaping policy and plans",
+                desc: "You want to be close to where decisions are made — in plans, guidelines, targets and regulations.",
+                scores: { climate_policy_advisor: 3, urban_sustainability_planner: 1 }
+            },
+            {
+                id: "m4_o3",
+                label: "Building tools and technologies",
+                desc: "You want to build and deploy tools, models or technologies that others can use at scale.",
+                scores: { env_data_analyst: 2, renewables_engineer: 2 }
+            },
+            {
+                id: "m4_o4",
+                label: "Mobilising people and institutions",
+                desc: "You want your strength to be in bringing communities, schools or organisations into sustained action.",
+                scores: { community_educator: 2, csr_specialist: 2 }
+            }
+        ]
+    }
+];
 
-const mapping = {
-    conservation: ["outdoors"],
-    gis: ["mapping"],
-    journalist: ["writing"],
-    educator: ["teaching"],
-    climate_dev: ["climate_models"],
-    policy: ["policy_law"],
-    urban: ["city_design"],
-    renewable: ["energy"],
-    sustainability: ["corporate"]
-};
-
-let remaining = Object.keys(careers);
-let asked = [];
-let finished = false;
+let currentMissionIndex = -1;
+let careerScores = {};
+let chosenOptions = [];
 
 const startBtn = document.getElementById("start-btn");
-const resetBtn = document.getElementById("reset-btn");
-const questionBox = document.getElementById("question-box");
-const questionText = document.getElementById("question-text");
-const yesBtn = document.getElementById("yes-btn");
-const noBtn = document.getElementById("no-btn");
-const statusText = document.getElementById("status-text");
-const resultBox = document.getElementById("result-box");
-const resultTitle = document.getElementById("result-title");
-const resultDesc = document.getElementById("result-desc");
-
-let currentQuestionKey = null;
+const restartBtn = document.getElementById("restart-btn");
+const missionBox = document.getElementById("mission-box");
+const missionProgress = document.getElementById("mission-progress");
+const missionTitle = document.getElementById("mission-title");
+const missionScene = document.getElementById("mission-scene");
+const choiceList = document.getElementById("choice-list");
+const resultsBox = document.getElementById("results-box");
+const resultIntro = document.getElementById("result-intro");
+const topCareersBox = document.getElementById("top-careers");
+const storySummaryBox = document.getElementById("story-summary");
 
 function resetGame() {
-    remaining = Object.keys(careers);
-    asked = [];
-    finished = false;
-    currentQuestionKey = null;
-    questionBox.classList.add("hidden");
-    resultBox.classList.add("hidden");
-    statusText.textContent = "";
-    questionText.textContent = "";
+    currentMissionIndex = -1;
+    careerScores = {};
+    Object.keys(careers).forEach(k => careerScores[k] = 0);
+    chosenOptions = [];
+    missionBox.classList.add("hidden");
+    resultsBox.classList.add("hidden");
+    missionTitle.textContent = "";
+    missionScene.textContent = "";
+    missionProgress.textContent = "";
+    choiceList.innerHTML = "";
+    topCareersBox.innerHTML = "";
+    storySummaryBox.innerHTML = "";
+    resultIntro.textContent = "";
 }
 
-function pickNextQuestion() {
-    const allKeys = Object.keys(questions);
-    const unused = allKeys.filter(k => !asked.includes(k));
-    if (unused.length === 0) {
-        return null;
-    }
-    const idx = Math.floor(Math.random() * unused.length);
-    return unused[idx];
+function renderMission() {
+    if (currentMissionIndex < 0 || currentMissionIndex >= missions.length) return;
+
+    const mission = missions[currentMissionIndex];
+    missionBox.classList.remove("hidden");
+    resultsBox.classList.add("hidden");
+
+    missionProgress.textContent = "Mission " + (currentMissionIndex + 1) + " of " + missions.length;
+    missionTitle.textContent = mission.title;
+    missionScene.textContent = mission.scene;
+
+    choiceList.innerHTML = "";
+    mission.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.dataset.missionId = mission.id;
+        btn.dataset.optionId = option.id;
+
+        const labelSpan = document.createElement("span");
+        labelSpan.className = "choice-label";
+        labelSpan.textContent = option.label;
+
+        const descSpan = document.createElement("span");
+        descSpan.className = "choice-desc";
+        descSpan.textContent = option.desc;
+
+        btn.appendChild(labelSpan);
+        btn.appendChild(descSpan);
+
+        btn.addEventListener("click", () => handleChoice(mission, option));
+
+        choiceList.appendChild(btn);
+    });
 }
 
-function showQuestion() {
-    if (finished) return;
-    currentQuestionKey = pickNextQuestion();
-    if (!currentQuestionKey) {
-        finishGame();
-        return;
-    }
-    questionText.textContent = questions[currentQuestionKey];
-    questionBox.classList.remove("hidden");
-    statusText.textContent = "Remaining possibilities: " + remaining.length;
-}
+function handleChoice(mission, option) {
+    chosenOptions.push({
+        missionId: mission.id,
+        missionTitle: mission.title,
+        label: option.label,
+        desc: option.desc,
+        scores: option.scores
+    });
 
-function applyAnswer(answer) {
-    if (!currentQuestionKey || finished) return;
-    asked.push(currentQuestionKey);
+    Object.keys(option.scores).forEach(cKey => {
+        if (!careerScores[cKey]) careerScores[cKey] = 0;
+        careerScores[cKey] += option.scores[cKey];
+    });
 
-    if (answer === "yes") {
-        remaining = remaining.filter(c => mapping[c].includes(currentQuestionKey));
+    currentMissionIndex += 1;
+    if (currentMissionIndex >= missions.length) {
+        showResults();
     } else {
-        remaining = remaining.filter(c => !mapping[c].includes(currentQuestionKey));
-    }
-
-    if (remaining.length <= 1 || asked.length === Object.keys(questions).length) {
-        finishGame();
-    } else {
-        showQuestion();
+        renderMission();
     }
 }
 
-function finishGame() {
-    finished = true;
-    questionBox.classList.add("hidden");
-    resultBox.classList.remove("hidden");
+function showResults() {
+    missionBox.classList.add("hidden");
+    resultsBox.classList.remove("hidden");
 
-    if (remaining.length === 1) {
-        const key = remaining[0];
-        resultTitle.textContent = "I think you are thinking of: " + careers[key].name;
-        resultDesc.textContent = careers[key].desc;
-    } else if (remaining.length > 1) {
-        const key = remaining[0];
-        resultTitle.textContent = "I am not fully sure, but my best guess is: " + careers[key].name;
-        resultDesc.textContent = careers[key].desc;
+    const sortedCareers = Object.entries(careerScores)
+        .filter(([, score]) => score > 0)
+        .sort((a, b) => b[1] - a[1]);
+
+    if (sortedCareers.length === 0) {
+        resultIntro.textContent = "Your choices didn't match any specific pattern strongly, which probably means you are open to many different roles. Here are a few starting points you could still explore:";
+        Object.keys(careers).slice(0, 3).forEach((cKey, idx) => {
+            renderCareerCard(cKey, 0, idx);
+        });
     } else {
-        resultTitle.textContent = "I couldn't guess your career.";
-        resultDesc.textContent = "Your answers eliminated all options.";
+        const topScore = sortedCareers[0][1];
+        const topGroup = sortedCareers.filter(([, score]) => score === topScore);
+        const nextTwo = sortedCareers.slice(topGroup.length, topGroup.length + 2);
+        const finalList = topGroup.concat(nextTwo);
+
+        resultIntro.textContent = "Based on how you moved through the missions, these roles align most with the strengths and preferences you kept choosing.";
+
+        finalList.forEach(([cKey, score], idx) => {
+            renderCareerCard(cKey, score, idx);
+        });
     }
+
+    storySummaryBox.innerHTML = "";
+    chosenOptions.forEach((step, idx) => {
+        const div = document.createElement("div");
+        div.className = "summary-step";
+        div.innerHTML = "<strong>Mission " + (idx + 1) + " – " + step.missionTitle + "</strong>"
+            + "<span>You chose: <em>" + step.label + "</em></span>";
+        storySummaryBox.appendChild(div);
+    });
+}
+
+function renderCareerCard(cKey, score, rankIndex) {
+    const container = document.createElement("div");
+    container.className = "game-result";
+    container.style.marginTop = "0.6rem";
+
+    const rankSpan = document.createElement("span");
+    rankSpan.className = "rank-badge " + (rankIndex === 0 ? "rank-1" : rankIndex === 1 ? "rank-2" : "rank-3");
+    rankSpan.textContent = rankIndex === 0 ? "Top match" : (rankIndex === 1 ? "Also a strong fit" : "Worth exploring");
+
+    const title = document.createElement("h4");
+    title.style.margin = "0.35rem 0 0.15rem 0";
+    title.textContent = careers[cKey].name;
+
+    const desc = document.createElement("p");
+    desc.style.fontSize = "0.9rem";
+    desc.style.margin = "0.1rem 0 0 0";
+    desc.textContent = careers[cKey].desc;
+
+    const pillRow = document.createElement("div");
+    pillRow.className = "pill-row";
+    const scoreSpan = document.createElement("span");
+    scoreSpan.textContent = "Story score: " + score;
+    pillRow.appendChild(scoreSpan);
+
+    container.appendChild(rankSpan);
+    container.appendChild(title);
+    container.appendChild(desc);
+    container.appendChild(pillRow);
+
+    topCareersBox.appendChild(container);
 }
 
 startBtn.addEventListener("click", function () {
     resetGame();
-    showQuestion();
+    currentMissionIndex = 0;
+    renderMission();
 });
 
-resetBtn.addEventListener("click", function () {
+restartBtn.addEventListener("click", function () {
     resetGame();
-});
-
-yesBtn.addEventListener("click", function () {
-    applyAnswer("yes");
-});
-
-noBtn.addEventListener("click", function () {
-    applyAnswer("no");
 });
 </script>
 </body>
